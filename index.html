@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Trabalho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14181c;
+    --panel: #1c2127;
+    --panel-2: #20262d;
+    --line: #2c333b;
+    --amber: #e8a33d;
+    --steel: #5c8aa6;
+    --text: #e8e6e1;
+    --muted: #8b94a0;
+    --ok: #6b9b6e;
+    --danger: #c1584a;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono{ font-family: 'IBM Plex Mono', monospace; }
+
+  .wrap{
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+  }
+
+  .topbar{
+    display:flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+  }
+  .topbar h1{
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .topbar .sub{
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .clock{
+    text-align: right;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--amber);
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .clock .date{
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 6px;
+  }
+
+  .grid{
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 720px){
+    .grid{ grid-template-columns: 1fr; }
+  }
+
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .panel-head{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+  }
+  .panel-head h2{
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+    color: var(--text);
+  }
+  .panel-head .count{
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .panel-body{ padding: 14px 16px; }
+  .panel + .panel{ margin-top: 18px; }
+
+  ul.list{ list-style:none; margin:0; padding:0; }
+  ul.list li{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14.5px;
+  }
+  ul.list li:last-child{ border-bottom: none; }
+
+  .check{
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--muted);
+    border-radius: 4px;
+    flex-shrink:0;
+    cursor: pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: border-color .15s, background .15s;
+  }
+  .check.done{
+    background: var(--ok);
+    border-color: var(--ok);
+  }
+  .check.done::after{
+    content:"";
+    width: 8px; height: 4px;
+    border-left: 2px solid #0e1013;
+    border-bottom: 2px solid #0e1013;
+    transform: rotate(-45deg) translateY(-1px);
+  }
+  .item-text{ flex:1; }
+  .item-text.done{ color: var(--muted); text-decoration: line-through; }
+  .del{
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink:0;
+  }
+  .del:hover{ color: var(--danger); }
+
+  .deadline-row{
+    display:flex; justify-content: space-between; align-items:center;
+    padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14.5px;
+  }
+  .deadline-row:last-child{ border-bottom: none; }
+  .deadline-tag{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    margin-left: 10px;
+  }
+  .tag-today{ background: rgba(193,88,74,.18); color: var(--danger); }
+  .tag-soon{ background: rgba(232,163,61,.18); color: var(--amber); }
+  .tag-later{ background: rgba(92,138,166,.18); color: var(--steel); }
+
+  .add-row{
+    display:flex; gap: 8px; margin-top: 12px;
+  }
+  .add-row input, .add-row input[type="date"]{
+    flex:1;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 8px 10px;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 13.5px;
+  }
+  .add-row input::placeholder{ color: var(--muted); }
+  .add-row button{
+    background: var(--amber);
+    color: #14181c;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 14px;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    flex-shrink:0;
+  }
+  .add-row button:hover{ opacity: .88; }
+
+  textarea{
+    width:100%;
+    min-height: 110px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 10px;
+    border-radius: 5px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13.5px;
+    resize: vertical;
+  }
+  .notes-status{
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+    height: 14px;
+  }
+
+  .links{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .link-btn{
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 12px 6px;
+    text-decoration:none;
+    color: var(--text);
+    font-size: 11.5px;
+    transition: border-color .15s;
+  }
+  .link-btn:hover{ border-color: var(--amber); }
+  .link-btn .ic{ font-size: 18px; }
+
+  .empty{
+    color: var(--muted);
+    font-size: 13px;
+    font-style: italic;
+    padding: 4px 0;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div>
+      <h1>Painel de Trabalho</h1>
+      <div class="sub">Produção &amp; prioridades do dia</div>
+    </div>
+    <div class="clock">
+      <div id="clockTime">--:--</div>
+      <div class="date" id="clockDate">-- -- --</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Prioridades do dia</h2>
+          <span class="count mono" id="taskCount">0/0</span>
+        </div>
+        <div class="panel-body">
+          <ul class="list" id="taskList"></ul>
+          <div class="add-row">
+            <input type="text" id="taskInput" placeholder="Nova tarefa…" maxlength="120">
+            <button onclick="addTask()">Adicionar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Prazos</h2>
+          <span class="count mono" id="deadlineCount">0</span>
+        </div>
+        <div class="panel-body">
+          <div id="deadlineList"></div>
+          <div class="add-row">
+            <input type="text" id="deadlineInput" placeholder="Descrição do prazo…" maxlength="120">
+            <input type="date" id="deadlineDate">
+            <button onclick="addDeadline()">Adicionar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Notas rápidas</h2>
+        </div>
+        <div class="panel-body">
+          <textarea id="notesArea" placeholder="Escreve aqui…"></textarea>
+          <div class="notes-status" id="notesStatus"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Acesso rápido</h2>
+        </div>
+        <div class="panel-body">
+          <div class="links">
+            <a class="link-btn" href="https://mail.google.com" target="_blank"><span class="ic">✉️</span>Gmail</a>
+            <a class="link-btn" href="https://calendar.google.com" target="_blank"><span class="ic">📅</span>Agenda</a>
+            <a class="link-btn" href="https://drive.google.com" target="_blank"><span class="ic">🗂️</span>Drive</a>
+            <a class="link-btn" href="https://web.whatsapp.com" target="_blank"><span class="ic">💬</span>WhatsApp</a>
+            <a class="link-btn" href="https://www.dgeg.gov.pt" target="_blank"><span class="ic">⚡</span>DGEG</a>
+            <a class="link-btn" href="https://translate.google.com" target="_blank"><span class="ic">🌐</span>Tradutor</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let tasks = [];
+let deadlines = [];
+let notesTimer = null;
+
+function updateClock(){
+  const now = new Date();
+  const time = now.toLocaleTimeString('pt-PT', {hour:'2-digit', minute:'2-digit'});
+  const date = now.toLocaleDateString('pt-PT', {weekday:'long', day:'numeric', month:'long'});
+  document.getElementById('clockTime').textContent = time;
+  document.getElementById('clockDate').textContent = date;
+}
+updateClock();
+setInterval(updateClock, 15000);
+
+async function loadAll(){
+  try{
+    const t = await window.storage.get('tasks');
+    tasks = t ? JSON.parse(t.value) : [
+      {id: 1, text: 'Rever ordens de produção do dia', done: false},
+      {id: 2, text: 'Verificar entregas de material', done: false}
+    ];
+  }catch(e){ tasks = []; }
+
+  try{
+    const d = await window.storage.get('deadlines');
+    deadlines = d ? JSON.parse(d.value) : [];
+  }catch(e){ deadlines = []; }
+
+  try{
+    const n = await window.storage.get('notes');
+    document.getElementById('notesArea').value = n ? n.value : '';
+  }catch(e){}
+
+  renderTasks();
+  renderDeadlines();
+}
+
+async function saveTasks(){
+  try{ await window.storage.set('tasks', JSON.stringify(tasks)); }catch(e){}
+}
+async function saveDeadlines(){
+  try{ await window.storage.set('deadlines', JSON.stringify(deadlines)); }catch(e){}
+}
+
+function renderTasks(){
+  const ul = document.getElementById('taskList');
+  ul.innerHTML = '';
+  if(tasks.length === 0){
+    ul.innerHTML = '<div class="empty">Sem tarefas. Adiciona uma abaixo.</div>';
+  }
+  tasks.forEach(t => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <div class="check ${t.done ? 'done':''}" onclick="toggleTask(${t.id})"></div>
+      <span class="item-text ${t.done ? 'done':''}">${escapeHtml(t.text)}</span>
+      <span class="del" onclick="removeTask(${t.id})">remover</span>
+    `;
+    ul.appendChild(li);
+  });
+  const doneCount = tasks.filter(t=>t.done).length;
+  document.getElementById('taskCount').textContent = `${doneCount}/${tasks.length}`;
+}
+
+function renderDeadlines(){
+  const box = document.getElementById('deadlineList');
+  box.innerHTML = '';
+  const sorted = [...deadlines].sort((a,b)=> new Date(a.date) - new Date(b.date));
+  if(sorted.length === 0){
+    box.innerHTML = '<div class="empty">Sem prazos registados.</div>';
+  }
+  const today = new Date(); today.setHours(0,0,0,0);
+  sorted.forEach(d => {
+    const dt = new Date(d.date + 'T00:00:00');
+    const diffDays = Math.round((dt - today) / 86400000);
+    let tagClass = 'tag-later';
+    let tagText = dt.toLocaleDateString('pt-PT', {day:'2-digit', month:'2-digit'});
+    if(diffDays <= 0){ tagClass = 'tag-today'; tagText = diffDays === 0 ? 'Hoje' : 'Atrasado'; }
+    else if(diffDays <= 3){ tagClass = 'tag-soon'; tagText = `${diffDays} dias`; }
+    const row = document.createElement('div');
+    row.className = 'deadline-row';
+    row.innerHTML = `
+      <span>${escapeHtml(d.text)}</span>
+      <span style="display:flex;align-items:center;">
+        <span class="deadline-tag mono ${tagClass}">${tagText}</span>
+        <span class="del" style="margin-left:8px;" onclick="removeDeadline(${d.id})">remover</span>
+      </span>
+    `;
+    box.appendChild(row);
+  });
+  document.getElementById('deadlineCount').textContent = deadlines.length;
+}
+
+function escapeHtml(s){
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+function addTask(){
+  const input = document.getElementById('taskInput');
+  const val = input.value.trim();
+  if(!val) return;
+  tasks.push({id: Date.now(), text: val, done: false});
+  input.value = '';
+  renderTasks();
+  saveTasks();
+}
+function toggleTask(id){
+  const t = tasks.find(t => t.id === id);
+  if(t){ t.done = !t.done; renderTasks(); saveTasks(); }
+}
+function removeTask(id){
+  tasks = tasks.filter(t => t.id !== id);
+  renderTasks();
+  saveTasks();
+}
+
+function addDeadline(){
+  const textInput = document.getElementById('deadlineInput');
+  const dateInput = document.getElementById('deadlineDate');
+  const val = textInput.value.trim();
+  const date = dateInput.value;
+  if(!val || !date) return;
+  deadlines.push({id: Date.now(), text: val, date: date});
+  textInput.value = '';
+  dateInput.value = '';
+  renderDeadlines();
+  saveDeadlines();
+}
+function removeDeadline(id){
+  deadlines = deadlines.filter(d => d.id !== id);
+  renderDeadlines();
+  saveDeadlines();
+}
+
+document.getElementById('taskInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter') addTask();
+});
+document.getElementById('deadlineInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter') document.getElementById('deadlineDate').focus();
+});
+
+document.getElementById('notesArea').addEventListener('input', e => {
+  clearTimeout(notesTimer);
+  document.getElementById('notesStatus').textContent = 'a guardar…';
+  notesTimer = setTimeout(async () => {
+    try{
+      await window.storage.set('notes', e.target.value);
+      document.getElementById('notesStatus').textContent = 'guardado';
+      setTimeout(()=>{ document.getElementById('notesStatus').textContent=''; }, 1500);
+    }catch(err){
+      document.getElementById('notesStatus').textContent = 'erro ao guardar';
+    }
+  }, 600);
+});
+
+loadAll();
+</script>
+</body>
+</html>
