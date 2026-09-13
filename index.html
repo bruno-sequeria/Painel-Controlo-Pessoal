@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <style>
   :root{
     --bg: #14181c;
@@ -237,10 +238,82 @@
     font-style: italic;
     padding: 4px 0;
   }
+
+  .login-screen{
+    min-height: 100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 20px;
+  }
+  .login-box{
+    width: 100%;
+    max-width: 320px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 26px 24px;
+  }
+  .login-box h1{
+    font-size: 18px;
+    margin: 0 0 4px;
+  }
+  .login-box .sub{
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+  .login-box input{
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 10px;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 13.5px;
+    margin-bottom: 10px;
+  }
+  .login-box button{
+    width: 100%;
+    background: var(--amber);
+    color: #14181c;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  .login-error{
+    color: var(--danger);
+    font-size: 12.5px;
+    margin-top: 10px;
+    min-height: 14px;
+  }
+  .logout-link{
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  .logout-link:hover{ color: var(--text); }
+  .hidden{ display:none !important; }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <h1>Painel de Trabalho</h1>
+    <div class="sub">Entra com a tua conta</div>
+    <input type="email" id="loginEmail" placeholder="Email" autocomplete="username">
+    <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+    <button onclick="doLogin()">Entrar</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<div class="wrap hidden" id="dashboard">
 
   <div class="topbar">
     <div>
@@ -250,6 +323,7 @@
     <div class="clock">
       <div id="clockTime">--:--</div>
       <div class="date" id="clockDate">-- -- --</div>
+      <div class="logout-link" onclick="doLogout()">sair</div>
     </div>
   </div>
 
@@ -327,12 +401,43 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth();
 const painelDoc = db.collection('painel').doc('bruno');
 
 let tasks = [];
 let deadlines = [];
 let notesTimer = null;
 let suppressNextSnapshot = false;
+let unsubscribeSnapshot = null;
+
+auth.onAuthStateChanged(user => {
+  if(user){
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    updateClock();
+    loadAll();
+  } else {
+    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('loginScreen').classList.remove('hidden');
+    if(unsubscribeSnapshot){ unsubscribeSnapshot(); unsubscribeSnapshot = null; }
+  }
+});
+
+function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errBox = document.getElementById('loginError');
+  errBox.textContent = '';
+  auth.signInWithEmailAndPassword(email, password).catch(err => {
+    errBox.textContent = 'Email ou password incorretos.';
+  });
+}
+function doLogout(){
+  auth.signOut();
+}
+document.getElementById('loginPassword').addEventListener('keydown', e => {
+  if(e.key === 'Enter') doLogin();
+});
 
 function updateClock(){
   const now = new Date();
@@ -345,7 +450,7 @@ updateClock();
 setInterval(updateClock, 15000);
 
 function loadAll(){
-  painelDoc.onSnapshot(snap => {
+  unsubscribeSnapshot = painelDoc.onSnapshot(snap => {
     if(suppressNextSnapshot){ suppressNextSnapshot = false; return; }
     const data = snap.data();
     if(!data){
@@ -491,7 +596,6 @@ document.getElementById('notesArea').addEventListener('input', e => {
   }, 600);
 });
 
-loadAll();
 </script>
 </body>
 </html>
