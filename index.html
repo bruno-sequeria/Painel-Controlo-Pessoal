@@ -6,6 +6,8 @@
 <title>Painel de Trabalho</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
   :root{
     --bg: #14181c;
@@ -315,9 +317,22 @@
 </div>
 
 <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCCCyqhkXTQdZd42ncMcypxIaG_rj8ISCc",
+  authDomain: "painel-phbp-bruno.firebaseapp.com",
+  projectId: "painel-phbp-bruno",
+  storageBucket: "painel-phbp-bruno.firebasestorage.app",
+  messagingSenderId: "127636482514",
+  appId: "1:127636482514:web:57e042c0772f0bb685c00b"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const painelDoc = db.collection('painel').doc('bruno');
+
 let tasks = [];
 let deadlines = [];
 let notesTimer = null;
+let suppressNextSnapshot = false;
 
 function updateClock(){
   const now = new Date();
@@ -329,34 +344,39 @@ function updateClock(){
 updateClock();
 setInterval(updateClock, 15000);
 
-async function loadAll(){
-  try{
-    const t = await window.storage.get('tasks');
-    tasks = t ? JSON.parse(t.value) : [
-      {id: 1, text: 'Rever ordens de produção do dia', done: false},
-      {id: 2, text: 'Verificar entregas de material', done: false}
-    ];
-  }catch(e){ tasks = []; }
-
-  try{
-    const d = await window.storage.get('deadlines');
-    deadlines = d ? JSON.parse(d.value) : [];
-  }catch(e){ deadlines = []; }
-
-  try{
-    const n = await window.storage.get('notes');
-    document.getElementById('notesArea').value = n ? n.value : '';
-  }catch(e){}
-
-  renderTasks();
-  renderDeadlines();
+function loadAll(){
+  painelDoc.onSnapshot(snap => {
+    if(suppressNextSnapshot){ suppressNextSnapshot = false; return; }
+    const data = snap.data();
+    if(!data){
+      tasks = [
+        {id: 1, text: 'Rever ordens de produção do dia', done: false},
+        {id: 2, text: 'Verificar entregas de material', done: false}
+      ];
+      deadlines = [];
+      saveTasks();
+      saveDeadlines();
+    } else {
+      tasks = data.tasks || [];
+      deadlines = data.deadlines || [];
+      if(document.activeElement !== document.getElementById('notesArea')){
+        document.getElementById('notesArea').value = data.notes || '';
+      }
+    }
+    renderTasks();
+    renderDeadlines();
+  }, err => {
+    document.getElementById('taskList').innerHTML = '<div class="empty">Erro a ligar à base de dados.</div>';
+  });
 }
 
 async function saveTasks(){
-  try{ await window.storage.set('tasks', JSON.stringify(tasks)); }catch(e){}
+  suppressNextSnapshot = true;
+  try{ await painelDoc.set({tasks}, {merge: true}); }catch(e){}
 }
 async function saveDeadlines(){
-  try{ await window.storage.set('deadlines', JSON.stringify(deadlines)); }catch(e){}
+  suppressNextSnapshot = true;
+  try{ await painelDoc.set({deadlines}, {merge: true}); }catch(e){}
 }
 
 function renderTasks(){
@@ -462,7 +482,7 @@ document.getElementById('notesArea').addEventListener('input', e => {
   document.getElementById('notesStatus').textContent = 'a guardar…';
   notesTimer = setTimeout(async () => {
     try{
-      await window.storage.set('notes', e.target.value);
+      await painelDoc.set({notes: e.target.value}, {merge: true});
       document.getElementById('notesStatus').textContent = 'guardado';
       setTimeout(()=>{ document.getElementById('notesStatus').textContent=''; }, 1500);
     }catch(err){
