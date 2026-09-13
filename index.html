@@ -18,6 +18,7 @@
     --muted: #8b94a0;
     --ok: #6b9b6e;
     --danger: #c1584a;
+    --sidebar-w: 210px;
   }
   *{ box-sizing: border-box; }
   body{
@@ -28,53 +29,118 @@
     -webkit-font-smoothing: antialiased;
   }
   .mono{ font-family: 'IBM Plex Mono', monospace; }
+  .hidden{ display:none !important; }
 
-  .wrap{
-    max-width: 920px;
-    margin: 0 auto;
-    padding: 28px 20px 60px;
-  }
-
-  .topbar{
+  /* ---- Login ---- */
+  .login-screen{
+    min-height: 100vh;
     display:flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 18px;
-    margin-bottom: 24px;
+    align-items:center;
+    justify-content:center;
+    padding: 20px;
   }
-  .topbar h1{
-    font-size: 22px;
+  .login-box{
+    width: 100%;
+    max-width: 320px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 26px 24px;
+  }
+  .login-box h1{ font-size: 18px; margin: 0 0 4px; }
+  .login-box .sub{ color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+  .login-box input{
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 10px;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 13.5px;
+    margin-bottom: 10px;
+  }
+  .login-box button{
+    width: 100%;
+    background: var(--amber);
+    color: #14181c;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  .login-error{ color: var(--danger); font-size: 12.5px; margin-top: 10px; min-height: 14px; }
+
+  /* ---- App shell ---- */
+  .app-shell{
+    display:flex;
+    min-height: 100vh;
+  }
+  .sidebar{
+    width: var(--sidebar-w);
+    flex-shrink:0;
+    background: var(--panel);
+    border-right: 1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    padding: 20px 14px;
+  }
+  .sidebar .brand{
+    font-size: 15px;
     font-weight: 700;
-    margin: 0 0 4px;
-    letter-spacing: -0.01em;
+    margin: 0 8px 22px;
   }
-  .topbar .sub{
+  .nav-group{ margin-bottom: 18px; }
+  .nav-label{
     color: var(--muted);
-    font-size: 14px;
+    font-size: 11px;
+    margin: 0 8px 6px;
   }
-  .clock{
-    text-align: right;
+  .nav-item{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    padding: 9px 8px;
+    border-radius: 5px;
+    color: var(--text);
+    text-decoration:none;
+    font-size: 13.5px;
+    cursor:pointer;
+    margin-bottom: 2px;
+  }
+  .nav-item:hover{ background: var(--panel-2); }
+  .nav-item.active{ background: var(--panel-2); color: var(--amber); }
+  .nav-item .ic{ width: 18px; text-align:center; flex-shrink:0; }
+
+  .sidebar-foot{
+    margin-top: auto;
+    padding: 12px 8px 0;
+    border-top: 1px solid var(--line);
+  }
+  .sidebar-foot .clock{
     font-family: 'IBM Plex Mono', monospace;
     color: var(--amber);
-    font-size: 26px;
+    font-size: 20px;
     font-weight: 500;
     line-height: 1;
   }
-  .clock .date{
-    color: var(--muted);
-    font-size: 12px;
-    margin-top: 6px;
-  }
+  .sidebar-foot .date{ color: var(--muted); font-size: 11.5px; margin-top: 4px; }
+  .logout-link{ color: var(--muted); font-size: 12px; cursor: pointer; margin-top: 10px; display:inline-block; }
+  .logout-link:hover{ color: var(--text); }
 
-  .grid{
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 18px;
+  .main{
+    flex:1;
+    min-width: 0;
+    padding: 28px 28px 60px;
+    max-width: 980px;
   }
-  @media (max-width: 720px){
-    .grid{ grid-template-columns: 1fr; }
-  }
+  .view-head{ margin-bottom: 20px; }
+  .view-head h1{ font-size: 21px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .view-head .sub{ color: var(--muted); font-size: 13.5px; }
+
+  .grid{ display: grid; grid-template-columns: 1.5fr 1fr; gap: 18px; }
 
   .panel{
     background: var(--panel);
@@ -90,28 +156,16 @@
     border-bottom: 1px solid var(--line);
     background: var(--panel-2);
   }
-  .panel-head h2{
-    font-size: 14px;
-    font-weight: 500;
-    margin: 0;
-    color: var(--text);
-  }
-  .panel-head .count{
-    font-family: 'IBM Plex Mono', monospace;
-    color: var(--muted);
-    font-size: 12px;
-  }
+  .panel-head h2{ font-size: 14px; font-weight: 500; margin: 0; color: var(--text); }
+  .panel-head .count{ font-family: 'IBM Plex Mono', monospace; color: var(--muted); font-size: 12px; }
+  .panel-head a.view-all{ color: var(--steel); font-size: 12px; text-decoration:none; cursor:pointer; }
   .panel-body{ padding: 14px 16px; }
   .panel + .panel{ margin-top: 18px; }
 
   ul.list{ list-style:none; margin:0; padding:0; }
   ul.list li{
-    display:flex;
-    align-items:center;
-    gap: 10px;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--line);
-    font-size: 14.5px;
+    display:flex; align-items:center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14.5px;
   }
   ul.list li:last-child{ border-bottom: none; }
 
@@ -124,10 +178,7 @@
     display:flex; align-items:center; justify-content:center;
     transition: border-color .15s, background .15s;
   }
-  .check.done{
-    background: var(--ok);
-    border-color: var(--ok);
-  }
+  .check.done{ background: var(--ok); border-color: var(--ok); }
   .check.done::after{
     content:"";
     width: 8px; height: 4px;
@@ -137,14 +188,7 @@
   }
   .item-text{ flex:1; }
   .item-text.done{ color: var(--muted); text-decoration: line-through; }
-  .del{
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 13px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    flex-shrink:0;
-  }
+  .del{ color: var(--muted); cursor: pointer; font-size: 13px; padding: 2px 6px; border-radius: 4px; flex-shrink:0; }
   .del:hover{ color: var(--danger); }
 
   .deadline-row{
@@ -154,19 +198,14 @@
   .deadline-row:last-child{ border-bottom: none; }
   .deadline-tag{
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 11.5px;
-    padding: 3px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
-    margin-left: 10px;
+    font-size: 11.5px; padding: 3px 8px; border-radius: 4px;
+    white-space: nowrap; margin-left: 10px;
   }
   .tag-today{ background: rgba(193,88,74,.18); color: var(--danger); }
   .tag-soon{ background: rgba(232,163,61,.18); color: var(--amber); }
   .tag-later{ background: rgba(92,138,166,.18); color: var(--steel); }
 
-  .add-row{
-    display:flex; gap: 8px; margin-top: 12px;
-  }
+  .add-row{ display:flex; gap: 8px; margin-top: 12px; }
   .add-row input, .add-row input[type="date"]{
     flex:1;
     background: var(--panel-2);
@@ -203,143 +242,154 @@
     font-size: 13.5px;
     resize: vertical;
   }
-  .notes-status{
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 6px;
-    height: 14px;
-  }
+  textarea.tall{ min-height: 340px; }
+  .notes-status{ font-size: 11px; color: var(--muted); margin-top: 6px; height: 14px; }
 
-  .links{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
-  .link-btn{
-    display:flex; flex-direction:column; align-items:center; gap:6px;
-    background: var(--panel-2);
-    border: 1px solid var(--line);
-    border-radius: 5px;
-    padding: 12px 6px;
-    text-decoration:none;
-    color: var(--text);
-    font-size: 11.5px;
-    transition: border-color .15s;
-  }
-  .link-btn:hover{ border-color: var(--amber); }
-  .link-btn .ic{ font-size: 18px; }
+  .empty{ color: var(--muted); font-size: 13px; font-style: italic; padding: 4px 0; }
 
-  .empty{
-    color: var(--muted);
-    font-size: 13px;
-    font-style: italic;
-    padding: 4px 0;
-  }
+  .view{ display:none; }
+  .view.active{ display:block; }
 
-  .login-screen{
-    min-height: 100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding: 20px;
+  @media (max-width: 860px){
+    .grid{ grid-template-columns: 1fr; }
   }
-  .login-box{
-    width: 100%;
-    max-width: 320px;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 26px 24px;
+  @media (max-width: 720px){
+    .app-shell{ flex-direction: column; }
+    .sidebar{
+      width: 100%;
+      flex-direction: row;
+      align-items:center;
+      overflow-x: auto;
+      padding: 10px 12px;
+      position: sticky; top:0; z-index: 10;
+    }
+    .sidebar .brand{ display:none; }
+    .nav-group{ display:flex; gap: 4px; margin-bottom: 0; }
+    .nav-label{ display:none; }
+    .nav-item{ white-space:nowrap; margin-bottom:0; }
+    .sidebar-foot{ margin-top:0; margin-left:auto; padding: 0 0 0 10px; border-top:none; display:flex; align-items:center; gap:10px; }
+    .sidebar-foot .date{ display:none; }
+    .sidebar-foot .clock{ font-size:15px; }
+    .logout-link{ margin-top:0; }
+    .main{ padding: 20px 16px 50px; }
   }
-  .login-box h1{
-    font-size: 18px;
-    margin: 0 0 4px;
-  }
-  .login-box .sub{
-    color: var(--muted);
-    font-size: 13px;
-    margin-bottom: 18px;
-  }
-  .login-box input{
-    width: 100%;
-    background: var(--panel-2);
-    border: 1px solid var(--line);
-    color: var(--text);
-    padding: 10px;
-    border-radius: 5px;
-    font-family: inherit;
-    font-size: 13.5px;
-    margin-bottom: 10px;
-  }
-  .login-box button{
-    width: 100%;
-    background: var(--amber);
-    color: #14181c;
-    border: none;
-    border-radius: 5px;
-    padding: 10px;
-    font-weight: 600;
-    font-size: 13.5px;
-    cursor: pointer;
-  }
-  .login-error{
-    color: var(--danger);
-    font-size: 12.5px;
-    margin-top: 10px;
-    min-height: 14px;
-  }
-  .logout-link{
-    color: var(--muted);
-    font-size: 12px;
-    cursor: pointer;
-    margin-top: 6px;
-  }
-  .logout-link:hover{ color: var(--text); }
-  .hidden{ display:none !important; }
 </style>
 </head>
 <body>
+
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
     <h1>Painel de Trabalho</h1>
     <div class="sub">Entra com a tua conta</div>
-    <input type="email" id="loginEmail" placeholder="Email" autocomplete="username">
+    <input type="email" id="loginEmail" placeholder="Email" autocomplete="username" autocapitalize="off" autocorrect="off">
     <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
     <button onclick="doLogin()">Entrar</button>
     <div class="login-error" id="loginError"></div>
   </div>
 </div>
 
-<div class="wrap hidden" id="dashboard">
+<div class="app-shell hidden" id="appShell">
 
-  <div class="topbar">
-    <div>
-      <h1>Painel de Trabalho</h1>
-      <div class="sub">Produção &amp; prioridades do dia</div>
+  <nav class="sidebar">
+    <div class="brand">Painel de Trabalho</div>
+
+    <div class="nav-group">
+      <div class="nav-item active" data-view="geral"><span class="ic">🏠</span>Visão Geral</div>
+      <div class="nav-item" data-view="producao"><span class="ic">🏭</span>Produção</div>
+      <div class="nav-item" data-view="prazos"><span class="ic">⏰</span>Prazos</div>
+      <div class="nav-item" data-view="notas"><span class="ic">📝</span>Notas</div>
     </div>
-    <div class="clock">
-      <div id="clockTime">--:--</div>
+
+    <div class="nav-group">
+      <div class="nav-label">Acesso rápido</div>
+      <a class="nav-item" href="https://calendar.google.com" target="_blank"><span class="ic">📅</span>Calendário</a>
+      <a class="nav-item" href="https://mail.google.com" target="_blank"><span class="ic">✉️</span>Email</a>
+      <a class="nav-item" href="https://web.whatsapp.com" target="_blank"><span class="ic">💬</span>WhatsApp</a>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="clock mono" id="clockTime">--:--</div>
       <div class="date" id="clockDate">-- -- --</div>
       <div class="logout-link" onclick="doLogout()">sair</div>
     </div>
-  </div>
+  </nav>
 
-  <div class="grid">
-    <div>
-      <div class="panel">
-        <div class="panel-head">
-          <h2>Prioridades do dia</h2>
-          <span class="count mono" id="taskCount">0/0</span>
+  <main class="main">
+
+    <!-- Visão Geral -->
+    <section class="view active" id="view-geral">
+      <div class="view-head">
+        <h1>Visão Geral</h1>
+        <div class="sub">Foco de hoje, num relance.</div>
+      </div>
+      <div class="grid">
+        <div>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Tarefas do dia</h2>
+              <span class="count mono" id="taskCount">0/0</span>
+            </div>
+            <div class="panel-body">
+              <ul class="list" id="taskList"></ul>
+              <div class="add-row">
+                <input type="text" id="taskInput" placeholder="Nova tarefa…" maxlength="120">
+                <button onclick="addTask()">Adicionar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Prazos mais próximos</h2>
+              <a class="view-all" onclick="showView('prazos')">ver todos</a>
+            </div>
+            <div class="panel-body">
+              <div id="deadlinePreview"></div>
+            </div>
+          </div>
         </div>
-        <div class="panel-body">
-          <ul class="list" id="taskList"></ul>
-          <div class="add-row">
-            <input type="text" id="taskInput" placeholder="Nova tarefa…" maxlength="120">
-            <button onclick="addTask()">Adicionar</button>
+
+        <div>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Notas rápidas</h2>
+            </div>
+            <div class="panel-body">
+              <textarea id="notesAreaQuick" placeholder="Escreve aqui…"></textarea>
+              <div class="notes-status" id="notesStatusQuick"></div>
+            </div>
           </div>
         </div>
       </div>
+    </section>
 
+    <!-- Produção -->
+    <section class="view" id="view-producao">
+      <div class="view-head">
+        <h1>Produção</h1>
+        <div class="sub">Ordens e entregas em curso.</div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Em curso</h2>
+          <span class="count mono" id="producaoCount">0/0</span>
+        </div>
+        <div class="panel-body">
+          <ul class="list" id="producaoList"></ul>
+          <div class="add-row">
+            <input type="text" id="producaoInput" placeholder="Nova ordem ou entrega…" maxlength="140">
+            <button onclick="addProducao()">Adicionar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prazos -->
+    <section class="view" id="view-prazos">
+      <div class="view-head">
+        <h1>Prazos</h1>
+        <div class="sub">Todos os prazos, por ordem.</div>
+      </div>
       <div class="panel">
         <div class="panel-head">
           <h2>Prazos</h2>
@@ -354,37 +404,23 @@
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div>
+    <!-- Notas -->
+    <section class="view" id="view-notas">
+      <div class="view-head">
+        <h1>Notas</h1>
+        <div class="sub">As tuas notas completas.</div>
+      </div>
       <div class="panel">
-        <div class="panel-head">
-          <h2>Notas rápidas</h2>
-        </div>
         <div class="panel-body">
-          <textarea id="notesArea" placeholder="Escreve aqui…"></textarea>
-          <div class="notes-status" id="notesStatus"></div>
+          <textarea class="tall" id="notesAreaFull" placeholder="Escreve aqui…"></textarea>
+          <div class="notes-status" id="notesStatusFull"></div>
         </div>
       </div>
+    </section>
 
-      <div class="panel">
-        <div class="panel-head">
-          <h2>Acesso rápido</h2>
-        </div>
-        <div class="panel-body">
-          <div class="links">
-            <a class="link-btn" href="https://mail.google.com" target="_blank"><span class="ic">✉️</span>Gmail</a>
-            <a class="link-btn" href="https://calendar.google.com" target="_blank"><span class="ic">📅</span>Agenda</a>
-            <a class="link-btn" href="https://drive.google.com" target="_blank"><span class="ic">🗂️</span>Drive</a>
-            <a class="link-btn" href="https://web.whatsapp.com" target="_blank"><span class="ic">💬</span>WhatsApp</a>
-            <a class="link-btn" href="https://www.dgeg.gov.pt" target="_blank"><span class="ic">⚡</span>DGEG</a>
-            <a class="link-btn" href="https://translate.google.com" target="_blank"><span class="ic">🌐</span>Tradutor</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  </main>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -406,18 +442,20 @@ const painelDoc = db.collection('painel').doc('bruno');
 
 let tasks = [];
 let deadlines = [];
+let producao = [];
 let notesTimer = null;
 let suppressNextSnapshot = false;
 let unsubscribeSnapshot = null;
 
+/* ---- Auth ---- */
 auth.onAuthStateChanged(user => {
   if(user){
     document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
+    document.getElementById('appShell').classList.remove('hidden');
     updateClock();
     loadAll();
   } else {
-    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('appShell').classList.add('hidden');
     document.getElementById('loginScreen').classList.remove('hidden');
     if(unsubscribeSnapshot){ unsubscribeSnapshot(); unsubscribeSnapshot = null; }
   }
@@ -432,13 +470,24 @@ function doLogin(){
     errBox.textContent = 'Email ou password incorretos.';
   });
 }
-function doLogout(){
-  auth.signOut();
-}
+function doLogout(){ auth.signOut(); }
 document.getElementById('loginPassword').addEventListener('keydown', e => {
   if(e.key === 'Enter') doLogin();
 });
 
+/* ---- Navigation ---- */
+function showView(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.nav-item[data-view]').forEach(n => {
+    n.classList.toggle('active', n.dataset.view === name);
+  });
+}
+document.querySelectorAll('.nav-item[data-view]').forEach(n => {
+  n.addEventListener('click', () => showView(n.dataset.view));
+});
+
+/* ---- Clock ---- */
 function updateClock(){
   const now = new Date();
   const time = now.toLocaleTimeString('pt-PT', {hour:'2-digit', minute:'2-digit'});
@@ -449,6 +498,7 @@ function updateClock(){
 updateClock();
 setInterval(updateClock, 15000);
 
+/* ---- Data load/save ---- */
 function loadAll(){
   unsubscribeSnapshot = painelDoc.onSnapshot(snap => {
     if(suppressNextSnapshot){ suppressNextSnapshot = false; return; }
@@ -459,37 +509,41 @@ function loadAll(){
         {id: 2, text: 'Verificar entregas de material', done: false}
       ];
       deadlines = [];
-      saveTasks();
-      saveDeadlines();
+      producao = [];
+      saveTasks(); saveDeadlines(); saveProducao();
     } else {
       tasks = data.tasks || [];
       deadlines = data.deadlines || [];
-      if(document.activeElement !== document.getElementById('notesArea')){
-        document.getElementById('notesArea').value = data.notes || '';
-      }
+      producao = data.producao || [];
+      const notes = data.notes || '';
+      const quick = document.getElementById('notesAreaQuick');
+      const full = document.getElementById('notesAreaFull');
+      if(document.activeElement !== quick) quick.value = notes;
+      if(document.activeElement !== full) full.value = notes;
     }
     renderTasks();
     renderDeadlines();
+    renderProducao();
   }, err => {
     document.getElementById('taskList').innerHTML = '<div class="empty">Erro a ligar à base de dados.</div>';
   });
 }
 
-async function saveTasks(){
-  suppressNextSnapshot = true;
-  try{ await painelDoc.set({tasks}, {merge: true}); }catch(e){}
-}
-async function saveDeadlines(){
-  suppressNextSnapshot = true;
-  try{ await painelDoc.set({deadlines}, {merge: true}); }catch(e){}
+async function saveTasks(){ suppressNextSnapshot = true; try{ await painelDoc.set({tasks}, {merge:true}); }catch(e){} }
+async function saveDeadlines(){ suppressNextSnapshot = true; try{ await painelDoc.set({deadlines}, {merge:true}); }catch(e){} }
+async function saveProducao(){ suppressNextSnapshot = true; try{ await painelDoc.set({producao}, {merge:true}); }catch(e){} }
+
+function escapeHtml(s){
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
 }
 
+/* ---- Tasks ---- */
 function renderTasks(){
   const ul = document.getElementById('taskList');
   ul.innerHTML = '';
-  if(tasks.length === 0){
-    ul.innerHTML = '<div class="empty">Sem tarefas. Adiciona uma abaixo.</div>';
-  }
+  if(tasks.length === 0) ul.innerHTML = '<div class="empty">Sem tarefas. Adiciona uma abaixo.</div>';
   tasks.forEach(t => {
     const li = document.createElement('li');
     li.innerHTML = `
@@ -502,50 +556,13 @@ function renderTasks(){
   const doneCount = tasks.filter(t=>t.done).length;
   document.getElementById('taskCount').textContent = `${doneCount}/${tasks.length}`;
 }
-
-function renderDeadlines(){
-  const box = document.getElementById('deadlineList');
-  box.innerHTML = '';
-  const sorted = [...deadlines].sort((a,b)=> new Date(a.date) - new Date(b.date));
-  if(sorted.length === 0){
-    box.innerHTML = '<div class="empty">Sem prazos registados.</div>';
-  }
-  const today = new Date(); today.setHours(0,0,0,0);
-  sorted.forEach(d => {
-    const dt = new Date(d.date + 'T00:00:00');
-    const diffDays = Math.round((dt - today) / 86400000);
-    let tagClass = 'tag-later';
-    let tagText = dt.toLocaleDateString('pt-PT', {day:'2-digit', month:'2-digit'});
-    if(diffDays <= 0){ tagClass = 'tag-today'; tagText = diffDays === 0 ? 'Hoje' : 'Atrasado'; }
-    else if(diffDays <= 3){ tagClass = 'tag-soon'; tagText = `${diffDays} dias`; }
-    const row = document.createElement('div');
-    row.className = 'deadline-row';
-    row.innerHTML = `
-      <span>${escapeHtml(d.text)}</span>
-      <span style="display:flex;align-items:center;">
-        <span class="deadline-tag mono ${tagClass}">${tagText}</span>
-        <span class="del" style="margin-left:8px;" onclick="removeDeadline(${d.id})">remover</span>
-      </span>
-    `;
-    box.appendChild(row);
-  });
-  document.getElementById('deadlineCount').textContent = deadlines.length;
-}
-
-function escapeHtml(s){
-  const div = document.createElement('div');
-  div.textContent = s;
-  return div.innerHTML;
-}
-
 function addTask(){
   const input = document.getElementById('taskInput');
   const val = input.value.trim();
   if(!val) return;
   tasks.push({id: Date.now(), text: val, done: false});
   input.value = '';
-  renderTasks();
-  saveTasks();
+  renderTasks(); saveTasks();
 }
 function toggleTask(id){
   const t = tasks.find(t => t.id === id);
@@ -553,10 +570,79 @@ function toggleTask(id){
 }
 function removeTask(id){
   tasks = tasks.filter(t => t.id !== id);
-  renderTasks();
-  saveTasks();
+  renderTasks(); saveTasks();
 }
+document.getElementById('taskInput').addEventListener('keydown', e => { if(e.key === 'Enter') addTask(); });
 
+/* ---- Produção ---- */
+function renderProducao(){
+  const ul = document.getElementById('producaoList');
+  ul.innerHTML = '';
+  if(producao.length === 0) ul.innerHTML = '<div class="empty">Sem itens em produção. Adiciona um abaixo.</div>';
+  producao.forEach(t => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <div class="check ${t.done ? 'done':''}" onclick="toggleProducao(${t.id})"></div>
+      <span class="item-text ${t.done ? 'done':''}">${escapeHtml(t.text)}</span>
+      <span class="del" onclick="removeProducao(${t.id})">remover</span>
+    `;
+    ul.appendChild(li);
+  });
+  const doneCount = producao.filter(t=>t.done).length;
+  document.getElementById('producaoCount').textContent = `${doneCount}/${producao.length}`;
+}
+function addProducao(){
+  const input = document.getElementById('producaoInput');
+  const val = input.value.trim();
+  if(!val) return;
+  producao.push({id: Date.now(), text: val, done: false});
+  input.value = '';
+  renderProducao(); saveProducao();
+}
+function toggleProducao(id){
+  const t = producao.find(t => t.id === id);
+  if(t){ t.done = !t.done; renderProducao(); saveProducao(); }
+}
+function removeProducao(id){
+  producao = producao.filter(t => t.id !== id);
+  renderProducao(); saveProducao();
+}
+document.getElementById('producaoInput').addEventListener('keydown', e => { if(e.key === 'Enter') addProducao(); });
+
+/* ---- Prazos ---- */
+function buildDeadlineRow(d, today){
+  const dt = new Date(d.date + 'T00:00:00');
+  const diffDays = Math.round((dt - today) / 86400000);
+  let tagClass = 'tag-later';
+  let tagText = dt.toLocaleDateString('pt-PT', {day:'2-digit', month:'2-digit'});
+  if(diffDays <= 0){ tagClass = 'tag-today'; tagText = diffDays === 0 ? 'Hoje' : 'Atrasado'; }
+  else if(diffDays <= 3){ tagClass = 'tag-soon'; tagText = `${diffDays} dias`; }
+  const row = document.createElement('div');
+  row.className = 'deadline-row';
+  row.innerHTML = `
+    <span>${escapeHtml(d.text)}</span>
+    <span style="display:flex;align-items:center;">
+      <span class="deadline-tag mono ${tagClass}">${tagText}</span>
+      <span class="del" style="margin-left:8px;" onclick="removeDeadline(${d.id})">remover</span>
+    </span>
+  `;
+  return row;
+}
+function renderDeadlines(){
+  const box = document.getElementById('deadlineList');
+  const preview = document.getElementById('deadlinePreview');
+  box.innerHTML = '';
+  preview.innerHTML = '';
+  const sorted = [...deadlines].sort((a,b)=> new Date(a.date) - new Date(b.date));
+  if(sorted.length === 0){
+    box.innerHTML = '<div class="empty">Sem prazos registados.</div>';
+    preview.innerHTML = '<div class="empty">Sem prazos registados.</div>';
+  }
+  const today = new Date(); today.setHours(0,0,0,0);
+  sorted.forEach(d => box.appendChild(buildDeadlineRow(d, today)));
+  sorted.slice(0, 4).forEach(d => preview.appendChild(buildDeadlineRow(d, today)));
+  document.getElementById('deadlineCount').textContent = deadlines.length;
+}
 function addDeadline(){
   const textInput = document.getElementById('deadlineInput');
   const dateInput = document.getElementById('deadlineDate');
@@ -564,38 +650,41 @@ function addDeadline(){
   const date = dateInput.value;
   if(!val || !date) return;
   deadlines.push({id: Date.now(), text: val, date: date});
-  textInput.value = '';
-  dateInput.value = '';
-  renderDeadlines();
-  saveDeadlines();
+  textInput.value = ''; dateInput.value = '';
+  renderDeadlines(); saveDeadlines();
 }
 function removeDeadline(id){
   deadlines = deadlines.filter(d => d.id !== id);
-  renderDeadlines();
-  saveDeadlines();
+  renderDeadlines(); saveDeadlines();
 }
-
-document.getElementById('taskInput').addEventListener('keydown', e => {
-  if(e.key === 'Enter') addTask();
-});
 document.getElementById('deadlineInput').addEventListener('keydown', e => {
   if(e.key === 'Enter') document.getElementById('deadlineDate').focus();
 });
 
-document.getElementById('notesArea').addEventListener('input', e => {
-  clearTimeout(notesTimer);
-  document.getElementById('notesStatus').textContent = 'a guardar…';
-  notesTimer = setTimeout(async () => {
-    try{
-      await painelDoc.set({notes: e.target.value}, {merge: true});
-      document.getElementById('notesStatus').textContent = 'guardado';
-      setTimeout(()=>{ document.getElementById('notesStatus').textContent=''; }, 1500);
-    }catch(err){
-      document.getElementById('notesStatus').textContent = 'erro ao guardar';
-    }
-  }, 600);
-});
-
+/* ---- Notas (dois campos, mesma fonte de dados) ---- */
+function wireNotes(textareaId, statusId){
+  const el = document.getElementById(textareaId);
+  const statusEl = document.getElementById(statusId);
+  el.addEventListener('input', e => {
+    clearTimeout(notesTimer);
+    statusEl.textContent = 'a guardar…';
+    const otherId = textareaId === 'notesAreaQuick' ? 'notesAreaFull' : 'notesAreaQuick';
+    const other = document.getElementById(otherId);
+    if(document.activeElement !== other) other.value = e.target.value;
+    notesTimer = setTimeout(async () => {
+      try{
+        suppressNextSnapshot = true;
+        await painelDoc.set({notes: e.target.value}, {merge: true});
+        statusEl.textContent = 'guardado';
+        setTimeout(()=>{ statusEl.textContent=''; }, 1500);
+      }catch(err){
+        statusEl.textContent = 'erro ao guardar';
+      }
+    }, 600);
+  });
+}
+wireNotes('notesAreaQuick', 'notesStatusQuick');
+wireNotes('notesAreaFull', 'notesStatusFull');
 </script>
 </body>
 </html>
